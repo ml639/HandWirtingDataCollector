@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<meta charset="utf-8" />
+<script src="/javascripts/canvas2image.js"></script>
+<style>
+    .doc {
+        width: 604px;
+        float:center;
+        
+    }
+    canvas {
+        display: block;
+        border: 2px solid #888;
+    }
+</style>
+<body>
+<div class="doc">
+    <div style="clear:both;"></div>
+    <div style="float:left;position:fixed;">
+        <canvas width="300" height="300" id="cvs">
+            Sorry, your browser is not supported.
+        </canvas>
+    </div>
+    
+    <div style="float:left;margin-left:350px;position:fixed;">
+        <p>
+            <p>
+                symbol:<img src=<%= imagename %> />
+                <span id="count"><%=number+1%>/40</span></br>
+                ID:<input id="name" value=<%=identity%>>
+                </br>
+            </p>
+            
+            <p>
+                <button id="save" style="height:30px; width:50px; float:right;background-color:red">Next</button>
+                <button id="clean" tyle="height:25px; width:50px;float:left;">clear</button>
+                
+                <span id="gotonext"></span>
+            </p>
+            <span> Please don't change the page's zoom</span>
+            <div style="clear:both;"></div>
+            <div>
+            <a id="g" style="float:left;" href=<%=prev%>>  Prev  </a>
+
+            <a id="dl" style="float:right;" href=<%=next%> >  Next  </a>
+            </div>
+            <span id="id" hidden><%=identity%></span>
+            <span id="number" hidden><%=number%></span>
+        </p>
+    </div>
+</div>
+<script>
+    var canvas, ctx, bMouseIsDown = false, iLastX, iLastY,
+        $save, $imgs, $clean,
+        $convert, $imgW=24, $imgH=24, $name,
+        $sel, $link, $id, $number, $gotonext;
+    var $cW = 300, $cH = 300;
+    function init () {
+        canvas = document.getElementById('cvs');
+        ctx = canvas.getContext('2d');
+        $save = document.getElementById('save');
+        $clean = document.getElementById('clean');
+        $convert = document.getElementById('convert');
+        $sel = document.getElementById('sel');
+        $imgs = document.getElementById('imgs');
+        // $imgW = document.getElementById('imgW');
+        // $imgH = document.getElementById('imgH');
+        $name = document.getElementById('name');
+        $link = document.getElementById('dl');
+        $id = document.getElementById('id');
+        $number = document.getElementById('number');
+        $gotonext = document.getElementById('gotonext');
+        $link.style.visibility = "hidden";
+        bind();
+        draw();
+        // create a drawer which tracks touch movements
+        var drawer = {
+           touchstart: function(e){
+            bMouseIsDown = true;
+            iLastX = e.x - canvas.offsetLeft + (window.pageXOffset||document.body.scrollLeft||document.documentElement.scrollLeft);
+            iLastY = e.y - canvas.offsetTop + (window.pageYOffset||document.body.scrollTop||document.documentElement.scrollTop);
+           },
+           touchmove: function(e){
+            if (bMouseIsDown) {
+            var iX = e.x - canvas.offsetLeft + (window.pageXOffset||document.body.scrollLeft||document.documentElement.scrollLeft);
+            var iY = e.y - canvas.offsetTop + (window.pageYOffset||document.body.scrollTop||document.documentElement.scrollTop);
+            ctx.moveTo(iLastX, iLastY);
+            ctx.lineTo(iX, iY);
+            ctx.stroke();
+            iLastX = iX;
+            iLastY = iY;
+            //console.log(iX +" "+ iY);
+            }
+           },
+           touchend: function(coors){
+            bMouseIsDown = false;
+            iLastX = -1;
+            iLastY = -1;
+           }
+        };
+        function touchdraw(event){
+           // get the touch coordinates
+           var coors = {
+              x: event.targetTouches[0].pageX,
+              y: event.targetTouches[0].pageY
+           };
+           // pass the coordinates to the appropriate handler
+           drawer[event.type](coors);
+        }
+        
+        canvas.addEventListener('touchstart',touchdraw, false);
+        canvas.addEventListener('touchmove',touchdraw, false);
+        canvas.addEventListener('touchend',touchdraw, false);
+
+        document.body.addEventListener('touchmove',function(event){
+          event.preventDefault();
+        },false);   // end body:touchmove
+
+    }
+    function bind () {
+        canvas.onmousedown = function(e) {
+            bMouseIsDown = true;
+            iLastX = e.clientX - canvas.offsetLeft + (window.pageXOffset||document.body.scrollLeft||document.documentElement.scrollLeft);
+            iLastY = e.clientY - canvas.offsetTop + (window.pageYOffset||document.body.scrollTop||document.documentElement.scrollTop);
+        }
+        canvas.onmouseup = function() {
+            bMouseIsDown = false;
+            iLastX = -1;
+            iLastY = -1;
+        }
+        canvas.onmousemove = function(e) {
+            if (bMouseIsDown) {
+                var iX = e.clientX - canvas.offsetLeft + (window.pageXOffset||document.body.scrollLeft||document.documentElement.scrollLeft);
+                var iY = e.clientY - canvas.offsetTop + (window.pageYOffset||document.body.scrollTop||document.documentElement.scrollTop);
+                ctx.moveTo(iLastX, iLastY);
+                ctx.lineTo(iX, iY);
+                ctx.stroke();
+                iLastX = iX;
+                iLastY = iY;
+            }
+        };
+        
+        $save.onclick = function (e) {
+            convert2png();
+        }
+        $clean.onclick = function(e){
+            cleanUp();
+        }
+        
+    }
+
+    function draw () {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, $cW, $cH);
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+    }
+
+    function cleanUp(){
+        canvas = null;
+        canvas = document.getElementById('cvs');
+        ctx = null;
+        ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        bind();
+        draw();
+    }
+
+    function convert2png(){
+        var st = Canvas2Image.convertToImage(canvas, 50, 50, 'image/png');
+        $link.href = "/save/"+$number.innerHTML+"/"+$id.innerHTML+"/"+st.substr(22).replace(/[!/_]/g,'*')+"";
+        $link.click();
+        // $gotonext.innerHTML = "Go To Next :)";
+        // $link.style.visibility = "visible"
+    }
+    onload = init;
+</script>
+</body>
+</html>

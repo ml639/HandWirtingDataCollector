@@ -1,0 +1,47 @@
+extends layout
+
+block content
+  div(float='right')
+    img(src='/images/all.png')
+    |     
+    div(float='left')
+      canvas#cvs(width='150', height='150')
+    |   
+    div
+      p
+        | name: 
+        input#name(type='text', value='name')
+        br
+        |             
+        button#save(style='height:20px; width:50px') save
+        |  
+        br
+        |             
+        button#clean(style='height:25px; width:50px') clean
+        |             
+        a#dl(download='something.png', href='#') Download Canvas
+        |             
+        br
+        |             
+        button#convert(style='height:30px; width:70px') convert to
+        |  as: 
+        |             
+        select#sel
+          option(value='png') png
+          |                 
+          option(value='jpeg') jpeg
+          |                 
+          option(value='bmp') bmp
+        br
+      p(hidden='')
+        | width : 
+        input#imgW(type='number', value='25')
+        br
+        | height : 
+        input#imgH(type='number', value='25')
+      |         
+      p
+    |     
+    #imgs
+  #download
+  
