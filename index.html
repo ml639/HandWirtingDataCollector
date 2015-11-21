@@ -5,7 +5,8 @@
 <style>
     .doc {
         width: 604px;
-        margin: 0 auto;
+        margin: 100px auto;
+        
     }
     canvas {
         display: block;
@@ -14,43 +15,59 @@
 </style>
 <body>
 <div class="doc">
-    <canvas width="600" height="400" id="cvs"></canvas>
+    <div float="right"><img src='all.png'></div>
+    <div float="left">
+    <canvas width="150" height="150" id="cvs"></canvas>
+    </div>
+    
     <div>
         <p>
-            <button id="save">save</button> or <button id="convert">convert to</button> as: 
+            name: <input type="text" value="name" id="name" /></br>
+            <button id="save" style="height:20px; width:50px">save</button> </br>
+            <button id="clean" style="height:25px; width:50px">clean</button>
+            <a id="dl" download="something.png" href="#">Download Canvas</a>
+            </br>
+            <button id="convert" style="height:30px; width:70px">convert to</button> as: 
             <select id="sel">
                 <option value="png">png</option>
                 <option value="jpeg">jpeg</option>
                 <option value="bmp">bmp</option>
             </select><br/>
-            width : <input type="number" value="300" id="imgW" /><br/>
-            height : <input type="number" value="200" id="imgH" />
+            <p hidden>
+            width : <input type="number" value="25" id="imgW" /><br/>
+            height : <input type="number" value="25" id="imgH" />
+            </p>
         </p>
-
     </div>
     <div id="imgs">
         
     </div>
 </div>
+<div id="download">
+    
+</div>
 <script>
     var canvas, ctx, bMouseIsDown = false, iLastX, iLastY,
-        $save, $imgs,
-        $convert, $imgW, $imgH,
+        $save, $imgs, $clean,
+        $convert, $imgW, $imgH, $name,
         $sel;
     function init () {
         canvas = document.getElementById('cvs');
         ctx = canvas.getContext('2d');
         $save = document.getElementById('save');
+        $clean = document.getElementById('clean');
         $convert = document.getElementById('convert');
         $sel = document.getElementById('sel');
         $imgs = document.getElementById('imgs');
         $imgW = document.getElementById('imgW');
         $imgH = document.getElementById('imgH');
+        $name = document.getElementById('name');
         bind();
         draw();
     }
     function bind () {
         canvas.onmousedown = function(e) {
+
             bMouseIsDown = true;
             iLastX = e.clientX - canvas.offsetLeft + (window.pageXOffset||document.body.scrollLeft||document.documentElement.scrollLeft);
             iLastY = e.clientY - canvas.offsetTop + (window.pageYOffset||document.body.scrollTop||document.documentElement.scrollTop);
@@ -69,14 +86,16 @@
                 ctx.stroke();
                 iLastX = iX;
                 iLastY = iY;
+                console.log(iX +" "+ iY);
             }
         };
         
         $save.onclick = function (e) {
-            var type = $sel.value,
-                w = $imgW.value,
-                h = $imgH.value;
-            Canvas2Image.saveAsImage(canvas, w, h, type);
+            download2png();
+            // var type = $sel.value,
+            //     w = $imgW.value,
+            //     h = $imgH.value;
+            // Canvas2Image.saveAsImage(canvas, w, h, type);
         }
         $convert.onclick = function (e) {
             var type = $sel.value,
@@ -84,15 +103,38 @@
                 h = $imgH.value;
             $imgs.appendChild(Canvas2Image.convertToImage(canvas, w, h, type))
         }
+        $clean.onclick = function(e){
+            cleanUp();
+        }
         
     }
     function draw () {
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, 600, 400);
-        ctx.fillStyle = 'red';
-        ctx.fillRect(100, 100, 50, 50);
+        ctx.fillRect(0, 0, 150, 150);
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+    }
+    function cleanUp(){
+        canvas = null;
+        canvas = document.getElementById('cvs');
+        ctx = null;
+        ctx = canvas.getContext('2d');
+        ctx.beginPath();
+
+        bind();
+        draw();
+    }
+    function download2png(){
+        var text = $name.value
+        var dt = canvas.toDataURL('image/png');
+        var st = 'data:application/octet-stream;base64,headers=Content-Disposition%3A%20attachment%3B%20filename='+text+'.png'
+        dt = dt.replace(/^data:application\/octet-stream/, st);
+        document.getElementById("dl").href = dt;
+        document.getElementById("dl").download = text+".png";
+        //document.getElementById("dl").addEventListener('click', download2png, false);
     }
     
+
     
     onload = init;
 </script>
