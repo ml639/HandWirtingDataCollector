@@ -3,6 +3,7 @@
 A simple hand writing data collector for a machine learning project, handwriting recognition of Greek characters. 
 
 Works on tablet/mobil browsers.
+Store image data in MongoDB. 
 
 ###Getting Started with Code  : 
 
@@ -16,6 +17,6 @@ Works on tablet/mobil browsers.
 ###### Node App looks like
 ![](https://github.com/mliu639/HandWirtingDataCollector/blob/master/public/handwritingdatacollector.png)
 
-######prototype 1
-![](https://github.com/mliu639/HandWirtingDataCollector/blob/master/prototype1/prototype1.png)
+###### prototype 1
+![](https://github.com/mliu639/HandWirtingDataCollector/blob/master/protype1/prototype1.png)
 
