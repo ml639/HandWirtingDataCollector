@@ -2,8 +2,7 @@
 
 A simple hand writing data collector for a machine learning project, handwriting recognition of Greek characters. 
 
-Works on tablet/mobil browsers.
-Store image data in MongoDB. 
+It works on tablet/mobile's browsers. Store image data in MongoDB. Can export the data into csv file. 
 
 ###Getting Started with Code  : 
 
