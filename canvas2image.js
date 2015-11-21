@@ -204,9 +204,16 @@ var Canvas2Image = function () {
 			type = fixType(type);
 			if (/bmp/.test(type)) {
 				var data = getImageData(scaleCanvas(canvas, width, height));
-				var strData = genBitmapImage(data);
+				//var strData = genBitmapImage(data);
+				var dt = canvas.toDataURL('image/png');
+				dt = dt.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Canvas.png');
 				saveFile(makeURI(strData, downloadMime));
 			} else {
+				var dt = canvas.toDataURL('image/png');
+				dt = dt.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;base64,headers=Content-Disposition%3A%20attachment%3B%20filename=Canvas.png');
+				console.log(dt);
+
+				document.location.href = dt;
 				var strData = getDataURL(canvas, type, width, height);
 				saveFile(strData.replace(type, downloadMime));
 			}
@@ -225,6 +232,8 @@ var Canvas2Image = function () {
 				return genImage(makeURI(strData, 'image/bmp'));
 			} else {
 				var strData = getDataURL(canvas, type, width, height);
+				console.log(strData);
+
 				return genImage(strData);
 			}
 		}
